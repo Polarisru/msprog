@@ -156,8 +156,6 @@ uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint16_t maxlen, uint16_t *max_ad
     switch (type)
     {
       case IHEX_DATA_RECORD:
-        //if (addr + segment + len >= *address)
-        //  *address = addr + segment + len;
         for (i = 0; i < len; i++)
         {
           byte = IHEX_GetByte(&str[IHEX_OFFS_DATA + i * 2]);

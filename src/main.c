@@ -1,23 +1,10 @@
 #include "defines.h"
 #include "ifaces.h"
 #include "app.h"
+#include "log.h"
 
 #define SW_VER_NUMBER   "0.1"
 #define SW_VER_DATE     "06.03.2021"
-
-#define FILENAME_LEN    (64)
-#define COMPORT_LEN     (32)
-
-typedef struct
-{
-  bool      check;
-  bool      write;
-  bool      show_info;
-  uint32_t  baudrate;
-  int8_t    interface;
-  char      port[COMPORT_LEN];
-  char      file[FILENAME_LEN];
-} tParam;
 
 tParam parameters;
 
@@ -31,11 +18,13 @@ void help(void)
   uint8_t i;
 
   printf("  -b BAUDRATE  - set COM baudrate (default=115200)\n");
-  printf("  -i INTERFACE - target interface\n");
   printf("  -c COM_PORT  - COM port to use (Win: COMx | *nix: /dev/ttyX)\n");
+  printf("  -f FILE.HEX  - name of Hex-file with firmware\n");
   printf("  -h           - show this help screen\n");
+  printf("  -i INTERFACE - target interface\n");
   printf("  -lX          - set logging level (0-all/1-warnings/2-errors)\n");
-  printf("  -f FILE.HEX  - Hex file to write\n");
+  printf("  -t           - test firmware with checksums\n");
+  printf("  -w           - write firmware to device\n");
   printf("\n");
   printf("  List of supported interfaces:\n    ");
   for (i = 0; i < IFACES_GetNumber(); i++)
@@ -101,18 +90,6 @@ int main(int argc, char* argv[])
             printf("COM-port name is missing!\n");
           }
           break;
-        case 'd':
-          /**< set interface */
-          if ((i < (argc - 1)) && (argv[i + 1][0] != '-'))
-          {
-            parameters.interface = IFACES_GetId(argv[i + 1]);
-            if (parameters.interface < 0)
-            {
-              printf("Wrong or unsupported interface type: %s\n", argv[i + 1]);
-              error = true;
-            }
-          }
-          break;
         case 'f':
           /**< get file name */
           if ((i < (argc - 1)) && (argv[i + 1][0] != '-'))
@@ -123,7 +100,7 @@ int main(int argc, char* argv[])
             i++;
           } else
           {
-            printf("%s: wrong file name for writing!\n", argv[i]);
+            printf("%s: wrong file name!\n", argv[i]);
             error = true;
           }
           break;
@@ -131,10 +108,45 @@ int main(int argc, char* argv[])
           /**< print help screen */
           help();
           return 0;
-        case 'm':
+        case 'i':
+          /**< set interface */
+          if ((i < (argc - 1)) && (argv[i + 1][0] != '-'))
+          {
+            parameters.iface = IFACES_GetId(argv[i + 1]);
+            if (parameters.iface < 0)
+            {
+              printf("Wrong or unsupported interface type: %s\n", argv[i + 1]);
+              error = true;
+            }
+          }
+          break;
+        case 'l':
           /**< level of messaging */
           if (argv[i][2] >= '0' && argv[i][2] <= '2')
             LOG_SetLevel(argv[i][2] - '0');
+          else
+            printf("Logging level %d is not supported\n");
+          break;
+        case 'n':
+          /**< set device ID for bus protocols */
+          if ((i < (argc - 1)) && (argv[i + 1][0] != '-'))
+          {
+            if (sscanf(argv[i + 1], "%u", &tVal) == 1)
+              parameters.bus_id = tVal;
+            else
+              printf("Bus ID parameter is wrong!\n");
+          } else
+          {
+            printf("Bus ID parameter is missing!\n");
+          }
+          break;
+        case 't':
+          /**< check firmware */
+          parameters.check = true;
+          break;
+        case 'w':
+          /**< write firmware */
+          parameters.write = true;
           break;
         default:
           printf("Unknown parameter: %s\n", argv[i]);
@@ -145,7 +157,7 @@ int main(int argc, char* argv[])
       return -1;
   }
 
-  if (parameters.interface < 0)
+  if (parameters.iface < 0)
   {
     printf("Interface type (-i) is not set!\n");
     return -1;
@@ -160,8 +172,13 @@ int main(int argc, char* argv[])
     printf("Nothing to do, stopping\n");
     return -1;
   }
+  if (strlen(parameters.file) == 0)
+  {
+    printf("File name is missing!\n");
+    return -1;
+  }
 
-  APP_Execute();
+  APP_Execute(&parameters);
 
   return 0;
 }
