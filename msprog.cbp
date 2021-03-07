@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="msprog" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/msprog" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/msprog" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="src/app.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/app.h" />
+		<Unit filename="src/com.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/com.h" />
+		<Unit filename="src/crc16.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/crc16.h" />
+		<Unit filename="src/crc32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/crc32.h" />
+		<Unit filename="src/defines.h" />
+		<Unit filename="src/ifaces.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/ifaces.h" />
+		<Unit filename="src/ihex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/ihex.h" />
+		<Unit filename="src/log.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/log.h" />
+		<Unit filename="src/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/phy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/phy.h" />
+		<Unit filename="src/progress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/progress.h" />
+		<Unit filename="src/sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/sleep.h" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
