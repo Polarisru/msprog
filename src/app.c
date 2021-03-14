@@ -13,6 +13,8 @@ const char APP_CMD_SetBaudrate[] = "SB%d";
 const char APP_CMD_SetId[] = "SID%d";
 const char APP_CMD_StartBL[] = "BLS";
 const char APP_CMD_StopBL[] = "BLQ";
+const char APP_CMD_WriteBL[] = "BLF%02X";
+const char APP_CMD_CheckBL[] = "BLC%02X:%04X";
 const char APP_CMD_NL[] = "\n";
 
 #define POWER_OFF_PAUSE_MS    500
@@ -52,7 +54,17 @@ bool APP_SetBaudrate(uint32_t baudrate)
   return APP_SendCmd(str);
 }
 
-bool APP_OpenFile(char *filename, uint8_t *fdata)
+bool APP_WriteFlash(uint16_t page, uint8_t *data)
+{
+  char str[32];
+
+  sprintf(str, APP_CMD_WriteBL, page);
+  APP_Send(str);
+
+  return true;
+}
+
+bool APP_OpenFile(char *filename, uint8_t *fdata, uint32_t *len)
 {
   uint8_t errCode;
   FILE *fp;
@@ -75,6 +87,7 @@ bool APP_OpenFile(char *filename, uint8_t *fdata)
       res = false;
       break;
     case IHEX_ERROR_NONE:
+      *len = max_addr;
       break;
   }
   fclose(fp);
@@ -86,6 +99,7 @@ bool APP_Execute(tParam *parameters)
 {
   uint8_t *fdata;
   bool res = true;
+  uint32_t i, len;
 
   fdata = malloc(FLASH_MAX_SIZE);
   if (!fdata)
@@ -96,7 +110,7 @@ bool APP_Execute(tParam *parameters)
 
   while (1)
   {
-    if (APP_OpenFile(parameters->file, fdata) == false)
+    if (APP_OpenFile(parameters->file, fdata, &len) == false)
     {
       res = false;
       break;
@@ -116,7 +130,15 @@ bool APP_Execute(tParam *parameters)
     msleep(POWER_ON_PAUSE_MS);
     APP_SendCmd((char*)APP_CMD_StartBL);
 
-
+    i = 0;
+    while (i < len)
+    {
+      if (APP_WriteFlash(i / FLASH_PAGE_SIZE, fdata) == false)
+      {
+        continue;
+      }
+      i+= FLASH_PAGE_SIZE;
+    }
 
     APP_SendCmd((char*)APP_CMD_StopBL);
 
