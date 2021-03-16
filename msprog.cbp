@@ -11,6 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="-c COM4 -b 115200 -f DA15NT-CAN.hex -w" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>

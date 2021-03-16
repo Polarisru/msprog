@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
           {
             strncpy(parameters.port, argv[i + 1], COMPORT_LEN);
             parameters.port[COMPORT_LEN - 1] = 0;
+            i++;
           } else
           {
             printf("COM-port name is missing!\n");
@@ -118,6 +119,7 @@ int main(int argc, char* argv[])
               printf("Wrong or unsupported interface type: %s\n", argv[i + 1]);
               error = true;
             }
+            i++;
           }
           break;
         case 'l':
@@ -135,6 +137,7 @@ int main(int argc, char* argv[])
               parameters.bus_id = tVal;
             else
               printf("Bus ID parameter is wrong!\n");
+            i++;
           } else
           {
             printf("Bus ID parameter is missing!\n");
@@ -155,6 +158,7 @@ int main(int argc, char* argv[])
     }
     if (error == true)
       return -1;
+    i++;
   }
 
   if (parameters.iface < 0)

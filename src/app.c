@@ -16,15 +16,35 @@ const char APP_CMD_StopBL[] = "BLQ";
 const char APP_CMD_WriteBL[] = "BLF%02X";
 const char APP_CMD_CheckBL[] = "BLC%02X:%04X";
 const char APP_CMD_NL[] = "\n";
+const char APP_CMD_OK[] = "OK";
 
 #define POWER_OFF_PAUSE_MS    500
 #define POWER_ON_PAUSE_MS     50
 
+void APP_Send(char *data)
+{
+  PHY_Send((uint8_t*)data, strlen(data));
+}
+
+void APP_SendData(uint8_t *data, uint16_t len)
+{
+  PHY_Send(data, len);
+}
+
 bool APP_SendCmd(char *cmd)
 {
-  strcat(cmd, APP_CMD_NL);
+  char str[32];
+  char reply[32];
 
-  return false;
+  strcpy(str, cmd);
+  strcat(str, APP_CMD_NL);
+  PHY_Send((uint8_t*)str, strlen(str));
+  if (PHY_ReceiveLine(reply, APP_CMD_NL[0]) == false)
+    return false;
+  if (strncmp(reply, APP_CMD_OK, strlen(APP_CMD_OK)) != 0)
+    return false;
+
+  return true;
 }
 
 bool APP_Power(bool on)
@@ -54,11 +74,21 @@ bool APP_SetBaudrate(uint32_t baudrate)
   return APP_SendCmd(str);
 }
 
+bool APP_SetId(uint8_t id)
+{
+  char str[32];
+
+  sprintf(str, APP_CMD_SetId, id);
+
+  return APP_SendCmd(str);
+}
+
 bool APP_WriteFlash(uint16_t page, uint8_t *data)
 {
   char str[32];
 
   sprintf(str, APP_CMD_WriteBL, page);
+  strcat(str, APP_CMD_NL);
   APP_Send(str);
 
   return true;
@@ -69,6 +99,7 @@ bool APP_OpenFile(char *filename, uint8_t *fdata, uint32_t *len)
   uint8_t errCode;
   FILE *fp;
   bool res = true;
+  uint32_t max_addr;
 
   if ((fp = fopen(filename, "rt")) == NULL)
   {
@@ -110,6 +141,9 @@ bool APP_Execute(tParam *parameters)
 
   while (1)
   {
+    if (PHY_Init(parameters->port, 115200, false) == false)
+      return false;
+
     if (APP_OpenFile(parameters->file, fdata, &len) == false)
     {
       res = false;
@@ -137,7 +171,8 @@ bool APP_Execute(tParam *parameters)
       {
         continue;
       }
-      i+= FLASH_PAGE_SIZE;
+      APP_SendData(&fdata[i], FLASH_PAGE_SIZE);
+      i += FLASH_PAGE_SIZE;
     }
 
     APP_SendCmd((char*)APP_CMD_StopBL);

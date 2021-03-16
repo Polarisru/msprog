@@ -123,9 +123,9 @@ uint8_t IHEX_GetByte(char *data)
  * \return error code as uint8_t
  *
  */
-uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint16_t maxlen, uint16_t *max_addr)
+uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint32_t maxlen, uint32_t *max_addr)
 {
-  uint16_t addr;
+  uint32_t addr;
   uint8_t len;
   uint8_t type;
   uint16_t segment;
