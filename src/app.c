@@ -154,25 +154,42 @@ bool APP_Execute(tParam *parameters)
       APP_SetInterface((uint8_t)parameters->iface);
 
     if (parameters->baudrate != 0)
-      APP_SetBaudrate((uint8_t)parameters->baudrate);
+      APP_SetBaudrate(parameters->baudrate);
 
     APP_SetId(parameters->bus_id);
 
-    APP_Power(false);
-    msleep(POWER_OFF_PAUSE_MS);
-    APP_Power(true);
+    //APP_Power(false);
+    //msleep(POWER_OFF_PAUSE_MS);
+    //APP_Power(true);
     msleep(POWER_ON_PAUSE_MS);
     APP_SendCmd((char*)APP_CMD_StartBL);
 
-    i = 0;
-    while (i < len)
+    if (parameters->write)
     {
-      if (APP_WriteFlash(i / FLASH_PAGE_SIZE, fdata) == false)
+      i = 0;
+      while (i < len)
       {
-        continue;
+        if (APP_WriteFlash(i / FLASH_PAGE_SIZE, fdata) == false)
+        {
+          continue;
+        }
+        APP_SendData(&fdata[i], FLASH_PAGE_SIZE);
+        i += FLASH_PAGE_SIZE;
       }
-      APP_SendData(&fdata[i], FLASH_PAGE_SIZE);
-      i += FLASH_PAGE_SIZE;
+    }
+
+    if (parameters->check)
+    {
+      i = 0;
+      while (i < len)
+      {
+        if (APP_CheckFlash(i / FLASH_PAGE_SIZE, fdata) == false)
+        {
+          continue;
+        }
+        APP_SendData(&fdata[i], FLASH_PAGE_SIZE);
+        i += FLASH_PAGE_SIZE;
+      }
     }
 
     APP_SendCmd((char*)APP_CMD_StopBL);

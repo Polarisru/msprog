@@ -14,7 +14,7 @@
  */
 bool PHY_Init(char *port, uint32_t baudrate, bool onDTR)
 {
-  return COM_Open(port, baudrate, true, true);
+  return COM_Open(port, baudrate, false, false);
 }
 
 /** \brief Send data to physical interface
@@ -41,9 +41,7 @@ bool PHY_Send(uint8_t *data, uint16_t len)
 bool PHY_Receive(uint8_t *data, uint16_t len)
 {
   int val = COM_Read(data, len);
-  if ((val < 0) || (val != len))
-    return false;
-  return true;
+  return (val == len);
 }
 
 /** \brief Receive line with end character
@@ -57,7 +55,7 @@ bool PHY_ReceiveLine(char *line, char endl)
 {
   char ch = 0;
 
-  while (COM_Read((uint8_t*)ch, 1) == true)
+  while (COM_Read((uint8_t*)&ch, 1) > 0)
   {
     if (ch == endl)
       break;

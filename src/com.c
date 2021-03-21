@@ -55,7 +55,12 @@ bool COM_Open(char *port, uint32_t baudrate, bool have_parity, bool two_stopbits
     dcbSerialParams.Parity   = EVENPARITY;  // Setting Parity = None
   else
     dcbSerialParams.Parity   = NOPARITY;
+  dcbSerialParams.fRtsControl = RTS_CONTROL_DISABLE;
   dcbSerialParams.fDtrControl = DTR_CONTROL_DISABLE;
+  dcbSerialParams.fBinary = TRUE;
+  dcbSerialParams.fParity = FALSE;
+  dcbSerialParams.fOutxCtsFlow = FALSE;
+  dcbSerialParams.fOutxDsrFlow = FALSE;
   SetCommState(hSerial, &dcbSerialParams);
   COMMTIMEOUTS timeouts;
   multiplier = (uint8_t)ceil((float)100000 / baudrate);
@@ -65,7 +70,6 @@ bool COM_Open(char *port, uint32_t baudrate, bool have_parity, bool two_stopbits
   timeouts.WriteTotalTimeoutMultiplier = 1;
   timeouts.WriteTotalTimeoutConstant = 1;
   SetCommTimeouts(hSerial, &timeouts);
-  //COM_Bytes = 0;
   #endif
 
   #ifdef __linux
@@ -129,22 +133,8 @@ int COM_Write(uint8_t *data, uint16_t len)
 {
   #ifdef __MINGW32__
   DWORD dwBytesWritten = 0;
-  //DWORD signal;
-  //OVERLAPPED ov = { 0 };
-  //int res;
-  //ov.hEvent = CreateEvent(NULL, true, true, NULL);
-
   if (!WriteFile(hSerial, data, len, &dwBytesWritten, NULL))
     return -1;
-  //COM_Bytes += dwBytesWritten;
-//  WriteFile(hSerial, data, len, &dwBytesWritten, &ov);
-//  signal = WaitForSingleObject(ov.hEvent, INFINITE);
-//  if ((signal == WAIT_OBJECT_0) && (GetOverlappedResult(hSerial, &ov, &dwBytesWritten, true)))
-//    res = 0;
-//  else
-//    res = -1;
-//  CloseHandle(ov.hEvent);
-//  return res;
   #endif
   #ifdef __linux
   int iOut = write(fd, data, len);
@@ -165,29 +155,7 @@ int COM_Write(uint8_t *data, uint16_t len)
 int COM_Read(uint8_t *data, uint16_t len)
 {
   #ifdef __MINGW32__
-  //OVERLAPPED ov = { 0 };
-  //COMSTAT status;
-  //DWORD errors;
-  //DWORD mask, btr, temp, signal;
   DWORD dwBytesRead = 0;
-//  ClearCommError(hSerial, &errors, &status);
-//  if (!ReadFile(hSerial, data, len, &dwBytesRead, &ov))
-//    return -1;
-
-//  btr = 0;
-//  while (btr < len)
-//  {
-//    SetCommMask(hSerial, EV_RXCHAR);
-//    WaitCommEvent(hSerial, &mask, NULL);
-//    if (mask & EV_ERR)
-//      break;
-//    ClearCommError(hSerial, &temp, &status);
-//    btr = status.cbInQue;
-//    if (btr >= len)
-//    {
-//      ReadFile(hSerial, data, len, &dwBytesRead, NULL);
-//    }
-//  }
   ReadFile(hSerial, data, len, &dwBytesRead, NULL);
   #endif
   #ifdef __linux
