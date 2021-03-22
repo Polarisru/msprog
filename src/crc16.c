@@ -23,7 +23,8 @@ const uint16_t CRC16_TableKearfott[256] =
 
 /**
  * \brief Calculating CRC16 checksum with table
- * \param [in] input Input buffer with data to calculate
+ * \param [in] init Initial value for CRC calculation
+ * \param [in] data Input buffer with data to calculate
  * \param [in] len Length of the data buffer
  * \return checksum as uint16_t
  */
@@ -40,6 +41,17 @@ uint16_t CRC16_Calc(uint16_t init, uint8_t *data, uint16_t len)
   }
 
   return crc;
+}
+
+/**
+ * \brief Calculating CRC16 checksum with table
+ * \param [in] data Input buffer with data to calculate
+ * \param [in] len Length of the data buffer
+ * \return checksum as uint16_t
+ */
+uint16_t CRC16_CalcData(uint8_t *data, uint16_t len)
+{
+  return CRC16_Calc(CRC16_INIT_VAL, data, len);
 }
 
 /**< CRC16 calculation table compatible with CCITT CRC */
@@ -85,35 +97,3 @@ const uint16_t CRC16_TableCCITT[256] =
 
   return crc;
 }
-
-//uint16_t CRC16_CalcCCITT(uint8_t *data, uint16_t len)
-//{
-//  uint16_t i;
-//
-//  /* disable the CRC engine */
-//  DMAC->CTRL.reg &= ~DMAC_CTRL_CRCENABLE;
-//  /* initialize start CRC value for the CRC16 */
-//  DMAC->CRCCHKSUM.reg = CRC16_INIT_VAL;
-//
-//  /* configure the CRC engine */
-//  DMAC_CRCCTRL_Type crcctrl =
-//  {
-//    .bit.CRCSRC = DMAC_CRCCTRL_CRCSRC_IO_Val, /* I/O interface */
-//    .bit.CRCPOLY = DMAC_CRCCTRL_CRCPOLY_CRC16_Val, /* CRC-16 (CRC-CCITT)  */
-//    .bit.CRCBEATSIZE = DMAC_CRCCTRL_CRCBEATSIZE_BYTE_Val, /* Byte bus access */
-//  };
-//  DMAC->CRCCTRL.reg = crcctrl.reg;
-//
-//  /* enable the CRC engine */
-//  DMAC->CTRL.reg = DMAC_CTRL_CRCENABLE;
-//
-//  /* write all values that are used for the CRC calculation */
-//  for (i = 0; i < len; i++)
-//    DMAC->CRCDATAIN.reg = *data++;
-//
-//  /* clear the busy bit */
-//  DMAC->CRCSTATUS.bit.CRCBUSY = true;
-//
-//  /* get final CRC value */
-//  return ((uint16_t) DMAC->CRCCHKSUM.reg);
-//}

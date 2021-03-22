@@ -62,6 +62,8 @@ int main(int argc, char* argv[])
     return 0;
   }
 
+  memset(&parameters, 0, sizeof(parameters));
+
   i = 1;
   while (i < argc)
   {
@@ -97,7 +99,6 @@ int main(int argc, char* argv[])
           {
             strncpy(parameters.file, argv[i + 1], FILENAME_LEN);
             parameters.file[FILENAME_LEN - 1] = 0;
-            parameters.write = true;
             i++;
           } else
           {
