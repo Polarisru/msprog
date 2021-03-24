@@ -14,7 +14,12 @@
  */
 bool PHY_Init(char *port, uint32_t baudrate, bool onDTR)
 {
-  return COM_Open(port, baudrate, false, false);
+  bool res = COM_Open(port, baudrate, false, false);
+  if (res == true)
+    LOG_Print(LOG_LEVEL_LAST, "Opened %s at %u baud", port, baudrate);
+  else
+    LOG_Print(LOG_LEVEL_ERROR, "Can't open port: %s", port);
+  return res;
 }
 
 /** \brief Send data to physical interface

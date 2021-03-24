@@ -4,7 +4,7 @@
 #include "log.h"
 
 #define SW_VER_NUMBER   "0.1"
-#define SW_VER_DATE     "06.03.2021"
+#define SW_VER_DATE     "24.03.2021"
 
 tParam parameters;
 
@@ -30,7 +30,7 @@ void help(void)
   for (i = 0; i < IFACES_GetNumber(); i++)
   {
     printf("%-14s", IFACES_GetNameByNumber(i));
-    if ((i + 1) % 4 == 0 ? printf("\n    "): printf(""));
+    if ((i + 1) % 4 == 0 ? printf("\n    "): printf(" "));
   }
   printf("\n");
 }
@@ -45,11 +45,11 @@ void help(void)
 int main(int argc, char* argv[])
 {
   uint8_t i;
-  uint8_t x;
+  //uint8_t x;
   bool error;
   uint32_t tVal;
-  char *pch;
-  uint16_t val;
+  //char *pch;
+  //uint16_t val;
 
   printf("################################################################\n");
   printf("#   Simple command line interface for MultiServo programming   #\n");
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
             if (sscanf(argv[i + 1], "%u", &tVal) == 1)
               parameters.baudrate = tVal;
             else
-              printf("Baudrate parameter is wrong!\n");
+              LOG_Print(LOG_LEVEL_ERROR, "Baudrate parameter is wrong: %s", argv[i + 1]);
           }
           break;
         case 'c':
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
             i++;
           } else
           {
-            printf("COM-port name is missing!\n");
+            LOG_Print(LOG_LEVEL_ERROR, "COM port name is missing");
           }
           break;
         case 'f':
@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
             i++;
           } else
           {
-            printf("%s: wrong file name!\n", argv[i]);
+            LOG_Print(LOG_LEVEL_ERROR, "Wrong file name: %s", argv[i]);
             error = true;
           }
           break;
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
             parameters.iface = IFACES_GetId(argv[i + 1]);
             if (parameters.iface < 0)
             {
-              printf("Wrong or unsupported interface type: %s\n", argv[i + 1]);
+              LOG_Print(LOG_LEVEL_ERROR, "Wrong or unsupported interface type: %s", argv[i + 1]);
               error = true;
             }
             i++;
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
           if (argv[i][2] >= '0' && argv[i][2] <= '2')
             LOG_SetLevel(argv[i][2] - '0');
           else
-            printf("Logging level %d is not supported\n");
+            LOG_Print(LOG_LEVEL_ERROR, "Logging level %c is not supported", argv[i][2]);
           break;
         case 'n':
           /**< set device ID for bus protocols */
@@ -137,11 +137,11 @@ int main(int argc, char* argv[])
             if (sscanf(argv[i + 1], "%u", &tVal) == 1)
               parameters.bus_id = tVal;
             else
-              printf("Bus ID parameter is wrong!\n");
+              LOG_Print(LOG_LEVEL_ERROR, "Bus ID parameter is wrong");
             i++;
           } else
           {
-            printf("Bus ID parameter is missing!\n");
+            LOG_Print(LOG_LEVEL_ERROR, "Bus ID parameter is missing");
           }
           break;
         case 't':
@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
           parameters.write = true;
           break;
         default:
-          printf("Unknown parameter: %s\n", argv[i]);
+          LOG_Print(LOG_LEVEL_ERROR, "Unknown parameter: %s", argv[i]);
           break;
       }
     }
@@ -164,22 +164,22 @@ int main(int argc, char* argv[])
 
   if (parameters.iface < 0)
   {
-    printf("Interface type (-i) is not set!\n");
+    LOG_Print(LOG_LEVEL_ERROR, "Interface type (-i) is not set");
     return -1;
   }
   if (strlen(parameters.port) == 0)
   {
-    printf("COM port name is missing!\n");
+    LOG_Print(LOG_LEVEL_ERROR, "COM port name is not set");
     return -1;
   }
   if (!parameters.write && !parameters.check)
   {
-    printf("Nothing to do, stopping\n");
+    LOG_Print(LOG_LEVEL_LAST, "Nothing to do, stopping");
     return -1;
   }
   if (strlen(parameters.file) == 0)
   {
-    printf("File name is missing!\n");
+    LOG_Print(LOG_LEVEL_ERROR, "File name is missing");
     return -1;
   }
 

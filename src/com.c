@@ -31,7 +31,6 @@ static uint32_t COM_Baudrate = 115200;
  */
 bool COM_Open(char *port, uint32_t baudrate, bool have_parity, bool two_stopbits)
 {
-  printf("Opening %s at %u baud\n", port, baudrate);
   COM_Baudrate = baudrate;
   #ifdef __MINGW32__
   char str[64];

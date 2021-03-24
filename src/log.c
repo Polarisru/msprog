@@ -30,6 +30,8 @@ void LOG_Print(uint8_t level, char *msg, ...)
     case LOG_LEVEL_ERROR:
       printf("ERROR: ");
       break;
+    case LOG_LEVEL_LAST:
+      break;
   }
   va_start(args, msg);
   vprintf(msg, args);

@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-c COM25 -i CAN -n 4 -b 1000 -f DA15NT-CAN.hex -t -w" />
+				<Option parameters="-c COM96 -i CAN -n 4 -b 1000 -f DA15NT-CAN.hex -t" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -76,12 +76,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/sleep.h" />
-		<Unit filename="src/xtea.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/xtea.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
+			<code_completion />
+			<envvars />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

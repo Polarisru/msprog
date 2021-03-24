@@ -126,6 +126,7 @@ uint8_t IHEX_GetByte(char *data)
 uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint32_t maxlen, uint32_t *max_addr)
 {
   uint32_t addr;
+  uint32_t first_addr;
   uint8_t len;
   uint8_t type;
   uint16_t segment;
@@ -136,6 +137,7 @@ uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint32_t maxlen, uint32_t *max_ad
 
   addr = 0;
   segment = 0;
+  first_addr = 0;
   while (!feof(fp))
   {
     if (fgets(str, sizeof(str), fp) == NULL)
@@ -150,6 +152,8 @@ uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint32_t maxlen, uint32_t *max_ad
     addr = (IHEX_GetByte(&str[IHEX_OFFS_ADDR]) << 8) + IHEX_GetByte(&str[IHEX_OFFS_ADDR + 2]);
     if (addr + segment >= maxlen)
       return IHEX_ERROR_SIZE;
+    if (first_addr == 0)
+      first_addr = addr;
     type = IHEX_GetByte(&str[IHEX_OFFS_TYPE]);
     if (len * 2 + IHEX_MIN_STRING != strlen(str))
       return IHEX_ERROR_FMT;
@@ -160,8 +164,8 @@ uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint32_t maxlen, uint32_t *max_ad
         {
           byte = IHEX_GetByte(&str[IHEX_OFFS_DATA + i * 2]);
           if (byte != 0xFF)
-            *max_addr = addr + segment + i + 1;
-          data[addr + segment + i] = byte;
+            *max_addr = addr + segment + i + 1 - first_addr;
+          data[addr + segment + i - first_addr] = byte;
         }
         break;
       case IHEX_END_OF_FILE_RECORD:
