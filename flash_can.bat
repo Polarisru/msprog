@@ -1,0 +1,1 @@
+msprog -c COM25 -i CAN -b 1000 -n 9 -f DA15NT-CAN.hex -t -w

@@ -1,0 +1,1 @@
+msprog -c COM25 -i PWM -f DA15T.hex -t -w

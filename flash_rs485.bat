@@ -1,0 +1,1 @@
+msprog -c COM25 -i RS485 -b 115200 -n 0 -f DA15A.hex -t -w
