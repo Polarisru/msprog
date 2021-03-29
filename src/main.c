@@ -4,7 +4,7 @@
 #include "log.h"
 
 #define SW_VER_NUMBER   "0.1"
-#define SW_VER_DATE     "24.03.2021"
+#define SW_VER_DATE     "29.03.2021"
 
 tParam parameters;
 
