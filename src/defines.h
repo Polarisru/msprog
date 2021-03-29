@@ -20,7 +20,7 @@ typedef struct
   bool      show_info;
   uint32_t  baudrate;
   int8_t    iface;
-  uint8_t   bus_id;
+  int8_t    bus_id;
   char      port[COMPORT_LEN];
   char      file[FILENAME_LEN];
 } tParam;

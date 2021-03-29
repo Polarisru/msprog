@@ -63,6 +63,7 @@ int main(int argc, char* argv[])
   }
 
   memset(&parameters, 0, sizeof(parameters));
+  parameters.bus_id = -1;
 
   i = 1;
   while (i < argc)

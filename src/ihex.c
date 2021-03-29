@@ -138,6 +138,7 @@ uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint32_t maxlen, uint32_t *max_ad
   addr = 0;
   segment = 0;
   first_addr = 0;
+  first_addr = UINT32_MAX;
   while (!feof(fp))
   {
     if (fgets(str, sizeof(str), fp) == NULL)
@@ -152,7 +153,7 @@ uint8_t IHEX_ReadFile(FILE *fp, uint8_t *data, uint32_t maxlen, uint32_t *max_ad
     addr = (IHEX_GetByte(&str[IHEX_OFFS_ADDR]) << 8) + IHEX_GetByte(&str[IHEX_OFFS_ADDR + 2]);
     if (addr + segment >= maxlen)
       return IHEX_ERROR_SIZE;
-    if (first_addr == 0)
+    if (first_addr == UINT32_MAX)
       first_addr = addr;
     type = IHEX_GetByte(&str[IHEX_OFFS_TYPE]);
     if (len * 2 + IHEX_MIN_STRING != strlen(str))

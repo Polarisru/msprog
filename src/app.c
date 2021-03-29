@@ -200,10 +200,13 @@ bool APP_Execute(tParam *parameters)
       }
     }
 
-    if (APP_SetId(parameters->bus_id) == false)
+    if (parameters->bus_id >= 0)
     {
-      LOG_Print(LOG_LEVEL_ERROR, "Unable to set bus ID: %d\n", parameters->bus_id);
-      break;
+      if (APP_SetId(parameters->bus_id) == false)
+      {
+        LOG_Print(LOG_LEVEL_ERROR, "Unable to set bus ID: %d\n", parameters->bus_id);
+        break;
+      }
     }
 
     msleep(POWER_ON_PAUSE_MS);
